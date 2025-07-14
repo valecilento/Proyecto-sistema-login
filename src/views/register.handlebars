@@ -1,0 +1,16 @@
+<main class="form-wrapper">
+  <h2 class="form-title">Registro de usuario</h2>
+  <form id="registerForm">
+    <input type="text" name="first_name" placeholder="Nombre" required>
+    <input type="text" name="last_name" placeholder="Apellido" required>
+    <input type="email" name="email" placeholder="Correo" required>
+    <input type="number" name="age" placeholder="Edad" required>
+    <input type="password" name="password" placeholder="Contraseña" required>
+    <button type="submit">Registrarse</button>
+  </form>
+  <p class="form-link">
+    ¿Ya tenés cuenta? <a href="/login">Iniciar sesión</a>
+  </p>
+<div id="alertPlaceholder" class="mt-3"></div>
+</main>
+<script src="/js/auth.js"></script>
