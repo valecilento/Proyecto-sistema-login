@@ -4,11 +4,12 @@ import passport from 'passport';
 import { engine } from 'express-handlebars';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import passwordRoutes from './routes/password.routes.js';
 
-import sessionRoutes from './src/routes/sessions.routes.js';
-import userRoutes from './src/routes/users.routes.js';
-import './src/config/db.js';
-import './src/config/passport.config.js';
+import sessionRoutes from './routes/sessions.routes.js';
+import userRoutes from './routes/users.routes.js';
+import './config/db.js';
+import './config/passport.config.js';
 
 dotenv.config();
 
@@ -21,17 +22,18 @@ const __dirname = path.dirname(__filename);
 // Configuración de Handlebars
 app.engine('handlebars', engine());
 app.set('view engine', 'handlebars');
-app.set('views', path.join(__dirname, 'src', 'views'));
+app.set('views', path.join(__dirname, 'views'));
 
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, '..','public')));
 app.use(passport.initialize());
 
 // Rutas API
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/password', passwordRoutes);
 
 // Ruta de vista principal
 app.get('/', (req, res) => {
@@ -47,6 +49,16 @@ app.get('/login', (req, res) => {
 
 app.get('/profile', (req, res) => {
   res.render('profile', { title: 'Perfil' });
+});
+app.get('/forgotPassword', (req, res) => {
+  res.render('forgotPassword', { title: 'Recuperar contraseña' });
+});
+app.get('/resetPassword', (req, res) => {
+  const { token } = req.query;
+  if (!token) {
+    return res.status(400).send('Token requerido');
+  }
+  res.render('resetPassword', { title: 'Restablecer contraseña', token });
 });
 
 // Puerto
