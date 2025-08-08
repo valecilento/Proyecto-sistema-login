@@ -2,6 +2,7 @@ import jwt from 'jsonwebtoken';
 import { createUser, findUserByEmail } from '../dao/user.dao.js';
 import { createHash } from '../utils/hash.js';
 import { JWT_SECRET } from '../config/jwt.js';
+import * as CartService from '../services/cart.service.js';
 
 export const register = async (req, res) => {
   const { first_name, last_name, email, age, password } = req.body;
@@ -22,13 +23,34 @@ export const register = async (req, res) => {
   }
 };
 
-export const login = (req, res) => {
-  const token = jwt.sign(
-    { id: req.user._id, email: req.user.email },
-    JWT_SECRET,
-    { expiresIn: '1h' }
-  );
-  res.send({ status: 'success', token });
+export const login = async (req, res) => {
+  try {
+    console.log('Usuario en req.user', req.user);
+    let cart = await CartService.getCartByUserId(req.user._id);
+    console.log('Carrito encontrado', cart);
+    if (!cart) {
+      cart = await CartService.createCartForUser(req.user._id);
+    }
+    const token = jwt.sign(
+      { 
+        id: req.user._id,
+        email: req.user.email,
+        role: req.user.role,
+        cartId: cart._id.toString()
+      },
+      JWT_SECRET,
+      { expiresIn: '1h' }
+    );
+    res.cookie('token', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      maxAge: 60 * 60 * 1000
+    });
+
+    res.json({ status: 'success', token, cartId: cart._id.toString() });
+  } catch (error) {
+    res.status(500).json({ status: 'error', error: error.message });
+  }
 };
 
 export const current = (req, res) => {

@@ -1,0 +1,25 @@
+<main class="form-wrapper">
+  <h2 class="form-title">Mi Carrito</h2>
+
+  {{#if cart.products.length}}
+    <ul style="list-style:none; padding-left:0;">
+      {{#each cart.products}}
+        <li style="margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid #ccc;">
+          <p><strong>{{this.product.title}}</strong></p>
+          <p>Cantidad: {{this.quantity}}</p>
+          <form action="/api/cart/remove/{{this.product._id}}" method="POST" style="display:inline;">
+            <input type="hidden" name="_method" value="DELETE" />
+            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+          </form>
+        </li>
+      {{/each}}
+    </ul>
+
+    <form action="/api/cart/purchase" method="POST">
+      <button type="submit" class="btn btn-primary w-100">Finalizar Compra</button>
+    </form>
+  {{else}}
+    <p>El carrito está vacío.</p>
+  {{/if}}
+
+</main>

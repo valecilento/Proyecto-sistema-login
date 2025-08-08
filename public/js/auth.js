@@ -55,6 +55,7 @@ document.getElementById('loginForm')?.addEventListener('submit', async e => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(user)
   });
+  console.log('Respuesta del servidor:', res);
 
   const data = await res.json();
 
@@ -74,7 +75,6 @@ document.getElementById('loginForm')?.addEventListener('submit', async e => {
   }
 });
 
-// Carga de datos en /profile
 async function loadUser() {
   const token = localStorage.getItem('token');
   if (!token) {
@@ -106,6 +106,12 @@ async function loadUser() {
     showNotLoggedInMessage();
   }
 }
+const loadCart = async (cartId, token) => {
+  const res = await fetch(`/api/cart/${cartId}`, {
+    headers: { Authorization: 'Bearer ' + token }
+  });
+  const data = await res.json();
+};
 
 function showNotLoggedInMessage() {
   const container = document.querySelector('main');

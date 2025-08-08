@@ -5,11 +5,15 @@ import { engine } from 'express-handlebars';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import passwordRoutes from './routes/password.routes.js';
-
 import sessionRoutes from './routes/sessions.routes.js';
 import userRoutes from './routes/users.routes.js';
+import cartRoutes from './routes/cart.routes.js';
 import './config/db.js';
 import './config/passport.config.js';
+import adminRoutes from './routes/admin.routes.js';
+import handlebars from 'express-handlebars';
+import cookieParser from 'cookie-parser';
+import authenticateJWT from './middlewares/authenticateJWT.js';
 
 dotenv.config();
 
@@ -20,20 +24,37 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuración de Handlebars
-app.engine('handlebars', engine());
+const hbs = handlebars.create({
+  helpers: {
+    eq: (a, b) => a === b
+  }
+});
+// Configuración de Handlebars
+
+app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
+
 
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '..','public')));
 app.use(passport.initialize());
+app.use(cookieParser());
+app.use((req, res, next) => {
+  res.locals.user = req.user || null;
+  res.locals.role = req.user?.role || null;
+  next();
+});
 
 // Rutas API
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/password', passwordRoutes);
+app.use('/api/cart', cartRoutes);
+app.use('/admin', adminRoutes);
+
 
 // Ruta de vista principal
 app.get('/', (req, res) => {
@@ -43,13 +64,19 @@ app.get('/register', (req, res) => {
   res.render('register', { title: 'Registro' });
 });
 
-app.get('/login', (req, res) => {
+app.get('/login', authenticateJWT, (req, res) => {
   res.render('login', { title: 'Login' });
 });
 
-app.get('/profile', (req, res) => {
+app.get('/cart', authenticateJWT, (req, res) => {
+  res.render('cart', { title: 'Mi carrito' });
+});
+
+app.get('/profile', authenticateJWT, (req, res) => {
   res.render('profile', { title: 'Perfil' });
 });
+
+
 app.get('/forgotPassword', (req, res) => {
   res.render('forgotPassword', { title: 'Recuperar contraseña' });
 });

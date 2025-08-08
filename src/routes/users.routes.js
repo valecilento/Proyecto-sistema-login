@@ -39,12 +39,3 @@ router.delete(
 );
 
 export default router;
-
-
-
-// router.get('/', passport.authenticate('jwt', { session: false }), getUsers);
-// router.get('/:uid', passport.authenticate('jwt', { session: false }), getUserById);
-// router.put('/:uid', passport.authenticate('jwt', { session: false }), updateUser);
-// router.delete('/:uid', passport.authenticate('jwt', { session: false }), deleteUser);
-
-// export default router;

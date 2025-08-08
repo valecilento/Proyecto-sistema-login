@@ -1,0 +1,68 @@
+<main class="form-wrapper">
+  <h2 class="form-title">Panel de Administración - Productos</h2>
+
+  {{!-- Formulario de creación o edición --}}
+  {{#if (eq role 'admin')}}
+  <section>
+    <h3>{{#if editing}}Editar Producto{{else}}Agregar Nuevo Producto{{/if}}</h3>
+    <form 
+      action="{{#if editing}}/admin/products/edit/{{product._id}}{{else}}/admin/products/new{{/if}}" 
+      method="POST"
+    >
+      <div>
+        <label for="title">Título:</label>
+        <input type="text" name="title" id="title" required value="{{product.title}}">
+      </div>
+      <div>
+        <label for="description">Descripción:</label>
+        <input type="text" name="description" id="description" required value="{{product.description}}">
+      </div>
+      <div>
+        <label for="price">Precio:</label>
+        <input type="number" name="price" id="price" required step="0.01" value="{{product.price}}">
+      </div>
+      <div>
+        <label for="stock">Stock:</label>
+        <input type="number" name="stock" id="stock" required value="{{product.stock}}">
+      </div>
+      <button type="submit" class="btn btn-primary">{{#if editing}}Actualizar{{else}}Crear{{/if}}</button>
+    </form>
+  </section>
+
+  <hr>
+  {{/if}}
+
+  {{!-- Lista de productos --}}
+  {{#if products.length}}
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Precio</th>
+          <th>Stock</th>
+          {{#if (eq role 'admin')}}<th>Acciones</th>{{/if}}
+        </tr>
+      </thead>
+      <tbody>
+        {{#each products}}
+          <tr>
+            <td>{{this.title}}</td>
+            <td>${{this.price}}</td>
+            <td>{{this.stock}}</td>
+            {{#if (eq ../role 'admin')}}
+            <td>
+              <a href="/admin/products/edit/{{this._id}}" class="btn btn-sm btn-warning">Editar</a>
+              <form action="/admin/products/delete/{{this._id}}" method="POST" style="display:inline;">
+                <input type="hidden" name="_method" value="DELETE" />
+                <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+              </form>
+            </td>
+            {{/if}}
+          </tr>
+        {{/each}}
+      </tbody>
+    </table>
+  {{else}}
+    <p>No hay productos para mostrar.</p>
+  {{/if}}
+</main>
