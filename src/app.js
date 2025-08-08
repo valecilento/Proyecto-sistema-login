@@ -11,9 +11,8 @@ import cartRoutes from './routes/cart.routes.js';
 import './config/db.js';
 import './config/passport.config.js';
 import adminRoutes from './routes/admin.routes.js';
-import handlebars from 'express-handlebars';
 import cookieParser from 'cookie-parser';
-import authenticateJWT from './middlewares/authenticateJWT.js';
+import { injectUserJWT, authenticateJWT } from './middlewares/authenticateJWT.js';
 
 dotenv.config();
 
@@ -24,17 +23,15 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Configuración de Handlebars
-const hbs = handlebars.create({
+app.engine('handlebars', engine({
   helpers: {
-    eq: (a, b) => a === b
-  }
-});
-// Configuración de Handlebars
+    eq: (a, b) => a === b
+  }
+}));
 
-app.engine('handlebars', hbs.engine);
+app.use(injectUserJWT);
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
-
 
 // Middlewares
 app.use(express.json());
@@ -64,18 +61,26 @@ app.get('/register', (req, res) => {
   res.render('register', { title: 'Registro' });
 });
 
-app.get('/login', authenticateJWT, (req, res) => {
+app.get('/login', (req, res) => {
   res.render('login', { title: 'Login' });
 });
 
-app.get('/cart', authenticateJWT, (req, res) => {
+app.get('/cart', injectUserJWT, (req, res) => {
   res.render('cart', { title: 'Mi carrito' });
 });
 
-app.get('/profile', authenticateJWT, (req, res) => {
+app.get('/profile', injectUserJWT, (req, res) => {
   res.render('profile', { title: 'Perfil' });
 });
 
+app.get('/admin', authenticateJWT, (req, res) => {
+  res.render('panelAdmin', { title: 'Panel Admin' });
+});
+
+app.get('/logout', (req, res) => {
+  res.clearCookie('token');
+  res.redirect('/login');
+});
 
 app.get('/forgotPassword', (req, res) => {
   res.render('forgotPassword', { title: 'Recuperar contraseña' });
@@ -91,5 +96,5 @@ app.get('/resetPassword', (req, res) => {
 // Puerto
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log("Servidor corriendo en http://localhost:${PORT}");
 });

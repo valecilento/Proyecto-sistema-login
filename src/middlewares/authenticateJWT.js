@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
-import userModel from '../models/user.model.js'; 
 
-const authenticateJWT = async (req, res, next) => {
+export const authenticateJWT = (req, res, next) => {
   const token = req.cookies.token;
 
   if (!token) {
@@ -10,16 +9,32 @@ const authenticateJWT = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await userModel.findById(decoded.id); 
-    if (!user) {
-      return res.status(401).render('error', { message: 'Usuario no encontrado' });
-    }
-
-    req.user = user; 
+    req.user = decoded;
     next();
   } catch (error) {
     return res.status(403).render('error', { message: 'Token inválido o expirado' });
   }
 };
+
+export const injectUserJWT = (req, res, next) => {
+  const token = req.cookies?.token;
+
+  if (!token) {
+    res.locals.user = null;
+    res.locals.role = null;
+    return next();
+  }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
+    res.locals.user = decoded;
+    res.locals.role = decoded.role || null;
+  } catch (error) {
+    res.locals.user = null;
+    res.locals.role = null;
+  }
+  next();
+};
+
 
 export default authenticateJWT;

@@ -61,7 +61,9 @@ document.getElementById('loginForm')?.addEventListener('submit', async e => {
 
   if (data.token) {
     localStorage.setItem('token', data.token);
-    window.location.href = '/profile';
+    document.cookie = `token=${data.token}; path=/; SameSite=Lax;`;
+  
+    window.location.href = '/cart';
   } else {
     const container = document.querySelector('main');
     container.innerHTML = `
