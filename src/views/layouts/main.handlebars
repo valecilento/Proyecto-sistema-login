@@ -17,7 +17,7 @@
         <li><a href="/register">Registrarse</a></li>
         <li><a href="/login">Login</a></li>
       {{/if}}
-      {{#if role}}
+      {{#if (eq role 'admin')}}
         <li><a href="/admin">Panel de administración</a></li>
       {{/if}}
     </ul>

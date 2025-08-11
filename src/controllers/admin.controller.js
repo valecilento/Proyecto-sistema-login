@@ -12,6 +12,7 @@ export const renderAdminPanel = async (req, res) => {
       user,
       editing: false
     });
+    
   } catch (err) {
     res.status(500).send('Error al cargar los productos');
   }

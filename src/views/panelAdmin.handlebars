@@ -1,7 +1,6 @@
-<main class="form-wrapper">
+<main class="form-wrapper"> 
   <h2 class="form-title">Panel de Administración - Productos</h2>
 
-  {{!-- Formulario de creación o edición --}}
   {{#if (eq role 'admin')}}
   <section>
     <h3>{{#if editing}}Editar Producto{{else}}Agregar Nuevo Producto{{/if}}</h3>
@@ -28,16 +27,15 @@
       <button type="submit" class="btn btn-primary">{{#if editing}}Actualizar{{else}}Crear{{/if}}</button>
     </form>
   </section>
-
   <hr>
   {{/if}}
 
-  {{!-- Lista de productos --}}
   {{#if products.length}}
     <table class="table">
       <thead>
         <tr>
           <th>Título</th>
+          <th>Descripción</th>
           <th>Precio</th>
           <th>Stock</th>
           {{#if (eq role 'admin')}}<th>Acciones</th>{{/if}}
@@ -46,12 +44,21 @@
       <tbody>
         {{#each products}}
           <tr>
-            <td>{{this.title}}</td>
-            <td>${{this.price}}</td>
-            <td>{{this.stock}}</td>
+            <td>
+              <input type="text" id="input-title-{{this._id}}" value="{{this.title}}" />
+            </td>
+            <td>
+              <input type="text" id="input-description-{{this._id}}" value="{{this.description}}" />
+            </td>
+            <td>
+              <input type="number" id="input-price-{{this._id}}" value="{{this.price}}" />
+            </td>
+            <td>
+              <input type="number" id="input-stock-{{this._id}}" value="{{this.stock}}" />
+            </td>
             {{#if (eq ../role 'admin')}}
             <td>
-              <a href="/admin/products/edit/{{this._id}}" class="btn btn-sm btn-warning">Editar</a>
+              <button class="btn btn-sm btn-success" onclick="saveProduct('{{this._id}}')">Guardar</button>
               <form action="/admin/products/delete/{{this._id}}" method="POST" style="display:inline;">
                 <input type="hidden" name="_method" value="DELETE" />
                 <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
@@ -65,4 +72,39 @@
   {{else}}
     <p>No hay productos para mostrar.</p>
   {{/if}}
+
+ <script>
+  async function saveProduct(productId) {
+    const title = document.getElementById(`input-title-${productId}`).value.trim();
+    const description = document.getElementById(`input-description-${productId}`).value.trim();
+    const price = parseFloat(document.getElementById(`input-price-${productId}`).value);
+    const stock = parseInt(document.getElementById(`input-stock-${productId}`).value);
+
+    if (!title || !description || isNaN(price) || isNaN(stock)) {
+      alert("Todos los campos son obligatorios y deben ser válidos.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/products/${productId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ title, description, price, stock })
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        alert("Producto actualizado correctamente.");
+      } else {
+        alert(`Error: ${result.message}`);
+      }
+    } catch (error) {
+      console.log(error)
+      alert("Error al enviar los datos al servidor.");
+    }
+  }
+</script>
 </main>

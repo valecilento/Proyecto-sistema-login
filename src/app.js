@@ -12,6 +12,7 @@ import './config/db.js';
 import './config/passport.config.js';
 import adminRoutes from './routes/admin.routes.js';
 import cookieParser from 'cookie-parser';
+import productRoutes from './routes/products.routes.js';
 import { injectUserJWT, authenticateJWT } from './middlewares/authenticateJWT.js';
 
 dotenv.config();
@@ -51,7 +52,7 @@ app.use('/api/users', userRoutes);
 app.use('/api/password', passwordRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/admin', adminRoutes);
-
+app.use('/api/products', productRoutes);
 
 // Ruta de vista principal
 app.get('/', (req, res) => {
@@ -96,5 +97,5 @@ app.get('/resetPassword', (req, res) => {
 // Puerto
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
-  console.log("Servidor corriendo en http://localhost:${PORT}");
+  console.log("Servidor corriendo en http://localhost:8080");
 });
