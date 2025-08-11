@@ -23,10 +23,12 @@ router.get('/products/edit/:id', authenticateJWT, checkRole('admin'), async (req
 router.get('/', authenticateJWT, checkRole('admin'), AdminController.renderAdminPanel);
 router.post('/products/new', authenticateJWT, checkRole('admin'), async (req, res) => {
   try {
-    const { title, description, price, stock } = req.body;
-    await Product.create({ title, description, price, stock });
+    console.log(req.body)
+    const { title, description, price, stock, code } = req.body;
+    await Product.create({ title, description, price: Number(price), stock: Number(stock), code});
     res.redirect('/admin/products');
   } catch (err) {
+    console.error(err);
     res.status(500).send('Error al crear el producto');
   }
 });

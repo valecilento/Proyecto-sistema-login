@@ -1,10 +1,10 @@
-<main class="form-wrapper"> 
-  <h2 class="form-title">Panel de Administración - Productos</h2>
+<main class="admin-panel-wrapper"> 
+  <h2 class="admin-panel-title">Panel de Administración - Productos</h2>
 
   {{#if (eq role 'admin')}}
   <section>
     <h3>{{#if editing}}Editar Producto{{else}}Agregar Nuevo Producto{{/if}}</h3>
-    <form 
+    <form class="admin-panel-form"
       action="{{#if editing}}/admin/products/edit/{{product._id}}{{else}}/admin/products/new{{/if}}" 
       method="POST"
     >
@@ -24,20 +24,25 @@
         <label for="stock">Stock:</label>
         <input type="number" name="stock" id="stock" required value="{{product.stock}}">
       </div>
-      <button type="submit" class="btn btn-primary">{{#if editing}}Actualizar{{else}}Crear{{/if}}</button>
+      <div>
+        <label for="code">Codigo:</label>
+        <input type="number" name="code" id="code" required value="{{product.code}}">
+      </div>
+      <button type="submit" class="admin-btn admin-btn-primary">{{#if editing}}Actualizar{{else}}Crear{{/if}}</button>
     </form>
   </section>
   <hr>
   {{/if}}
 
   {{#if products.length}}
-    <table class="table">
+    <table class="admin-table">
       <thead>
         <tr>
           <th>Título</th>
           <th>Descripción</th>
           <th>Precio</th>
           <th>Stock</th>
+          <th>Code</th>
           {{#if (eq role 'admin')}}<th>Acciones</th>{{/if}}
         </tr>
       </thead>
@@ -56,12 +61,15 @@
             <td>
               <input type="number" id="input-stock-{{this._id}}" value="{{this.stock}}" />
             </td>
+            <td>
+              <input type="number" id="input-code-{{this._id}}" value="{{this.code}}" />
+            </td>
             {{#if (eq ../role 'admin')}}
             <td>
-              <button class="btn btn-sm btn-success" onclick="saveProduct('{{this._id}}')">Guardar</button>
+              <button class="admin-btn btn-sm admin-btn-success" onclick="saveProduct('{{this._id}}')">Guardar</button>
               <form action="/admin/products/delete/{{this._id}}" method="POST" style="display:inline;">
                 <input type="hidden" name="_method" value="DELETE" />
-                <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                <button type="submit" class="admin-btn btn-sm admin-btn-danger">Eliminar</button>
               </form>
             </td>
             {{/if}}
@@ -79,19 +87,19 @@
     const description = document.getElementById(`input-description-${productId}`).value.trim();
     const price = parseFloat(document.getElementById(`input-price-${productId}`).value);
     const stock = parseInt(document.getElementById(`input-stock-${productId}`).value);
+    const code = parseInt(document.getElementById(`input-code-${productId}`).value);
 
-    if (!title || !description || isNaN(price) || isNaN(stock)) {
+    if (!title || !description || isNaN(price) || isNaN(stock) || isNaN(code)) {
       alert("Todos los campos son obligatorios y deben ser válidos.");
       return;
     }
-
     try {
       const response = await fetch(`/api/products/${productId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ title, description, price, stock })
+        body: JSON.stringify({ title, description, price, stock, code })
       });
 
       const result = await response.json();
