@@ -3,6 +3,8 @@ import Product from '../models/product.model.js';
 import authenticateJWT from '../middlewares/authenticateJWT.js';
 import * as AdminController from '../controllers/admin.controller.js';
 import { checkRole } from '../middlewares/checkRole.js';
+import { cleanCarts } from '../services/cart.service.js';
+
 
 const router = Router();
 
@@ -34,8 +36,8 @@ router.post('/products/new', authenticateJWT, checkRole('admin'), async (req, re
 });
 router.post('/products/edit/:id', authenticateJWT, checkRole('admin'), async (req, res) => {
   try {
-    const { title, description, price, stock } = req.body;
-    await Product.findByIdAndUpdate(req.params.id, { title, description, price, stock });
+    const { title, description, price, stock, code} = req.body;
+    await Product.findByIdAndUpdate(req.params.id, { title, description, price: Number(price), stock: Number(stock), code });
     res.redirect('/admin/products');
   } catch (err) {
     res.status(500).send('Error al actualizar el producto');
@@ -47,6 +49,14 @@ router.post('/products/delete/:id', authenticateJWT, checkRole('admin'), async (
     res.redirect('/admin/products');
   } catch (err) {
     res.status(500).send('Error al eliminar el producto');
+  }
+});
+router.post('/clean-carts', authenticateJWT, checkRole('admin'), async (req, res) => {
+  try {
+    await cleanCarts();
+    res.json({ status: 'success', message: 'Carritos limpiados correctamente.' });
+  } catch (err) {
+    res.status(500).json({ status: 'error', message: 'Error al limpiar los carritos.' });
   }
 });
 

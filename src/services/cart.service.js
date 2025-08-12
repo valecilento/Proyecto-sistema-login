@@ -1,6 +1,7 @@
 import Cart from '../models/cart.model.js';
 import Ticket from '../models/ticket.model.js';
 import { ticketCode } from '../utils/ticketCode.js';
+import Product from '../models/product.model.js';
 
 export const createCartForUser = async (userId) => {
   const newCart = new Cart({
@@ -12,6 +13,10 @@ export const createCartForUser = async (userId) => {
 };
 
 export const addProductToCart = async (userId, productId, quantity) => {
+  const product = await Product.findById(productId);
+  if (!product) throw new Error('Producto no encontrado');
+  if (product.stock < quantity) throw new Error('Stock insuficiente');
+
   const cart = await Cart.findOne({ user: userId }) || await createCartForUser(userId);
   const productInCart = cart.products.find(p => p.product.equals(productId));
   if (productInCart) {
@@ -60,6 +65,17 @@ export const purchaseCart = async (userId, email) => {
   });
 
   return ticket;
+};
+export const cleanCarts = async () => {
+  const carts = await Cart.find().populate('products.product');
+  for (const cart of carts) {
+    const originalLength = cart.products.length;
+    cart.products = cart.products.filter(item => item.product !== null);
+    if (cart.products.length !== originalLength) {
+      await cart.save();
+      console.log(`Carrito ${cart._id} limpio de productos nulos.`);
+    }
+  }
 };
 export const getCartById = async (cid) => {
   return await Cart.findById(cid).populate('products.product').lean();

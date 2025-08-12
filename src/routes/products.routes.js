@@ -5,6 +5,7 @@ import { checkRole } from '../middlewares/checkRole.js';
 
 const router = express.Router();
 
-router.put('/api/products/:pid', authenticate, checkRole('admin'), updateProduct);
+router.put('/:pid', authenticate, checkRole('admin'), updateProduct);
+router.post('/admin/products/edit/:id', authenticate, checkRole('admin'), updateProduct);
 
 export default router;

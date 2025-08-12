@@ -2,12 +2,12 @@ import Product from '../models/product.model.js';
 
 export const updateProduct = async (req, res) => {
   try {
-    const { pid } = req.params;
-    const { title, description, price, stock } = req.body;
+    const id  = req.params.pid || req.params.id;
+    const { title, description, price, stock, code } = req.body;
 
     const updated = await Product.findByIdAndUpdate(
-      pid,
-      { title, description, price, stock },
+      id,
+      { title, description, price: Number(price), stock: Number(stock), code },
       { new: true }
     );
     console.log("Datos recibidos:", req.body);
