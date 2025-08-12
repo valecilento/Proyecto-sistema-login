@@ -10,19 +10,19 @@
   <nav>
     <ul>
       <li><a href="/">Inicio</a></li>
+      <li><a href="/products">Productos</a></li>
       {{#if user}}
         <li><a href="/profile">Perfil</a></li>
         <li><a href="/cart">Mi Carrito</a></li>
+       {{#if (eq role 'admin')}}
+        <li><a href="/admin">Panel de administración</a></li>
+      {{/if}}
       {{else}}
         <li><a href="/register">Registrarse</a></li>
         <li><a href="/login">Login</a></li>
       {{/if}}
-      {{#if (eq role 'admin')}}
-        <li><a href="/admin">Panel de administración</a></li>
-      {{/if}}
     </ul>
   </nav>
-
   <main>
     {{{ body }}}
   </main>

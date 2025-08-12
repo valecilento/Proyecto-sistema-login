@@ -53,6 +53,7 @@ app.use('/api/password', passwordRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api/products', productRoutes);
+app.use('/products', productRoutes); // Para la vista pública
 
 // Ruta de vista principal
 app.get('/', (req, res) => {

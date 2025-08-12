@@ -13,28 +13,28 @@ const router = Router();
 router.get(
   '/',
   passport.authenticate('jwt', { session: false }),
-  checkRole('admin'), // 👈 solo admin puede ver todos los usuarios
+  checkRole('admin'), 
   getUsers
 );
 
 router.get(
   '/:uid',
   passport.authenticate('jwt', { session: false }),
-  checkRole('admin', 'user'), // 👈 admin y user pueden ver
+  checkRole('admin', 'user'), 
   getUserById
 );
 
 router.put(
   '/:uid',
   passport.authenticate('jwt', { session: false }),
-  checkRole('admin', 'user'), // 👈 permitir edición propia o por admin
+  checkRole('admin', 'user'), 
   updateUser
 );
 
 router.delete(
   '/:uid',
   passport.authenticate('jwt', { session: false }),
-  checkRole('admin'), // 👈 solo admin puede eliminar
+  checkRole('admin'), 
   deleteUser
 );
 

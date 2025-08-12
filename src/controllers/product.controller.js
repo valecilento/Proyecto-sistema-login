@@ -12,7 +12,6 @@ export const updateProduct = async (req, res) => {
     );
     console.log("Datos recibidos:", req.body);
 
-
     if (!updated) {
       return res.status(404).json({ message: 'Producto no encontrado' });
     }

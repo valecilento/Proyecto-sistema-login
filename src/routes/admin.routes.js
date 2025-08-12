@@ -11,7 +11,7 @@ const router = Router();
 router.get('/products', authenticateJWT, checkRole('admin'), async (req, res) => {
   const products = await Product.find().lean();
   const userRole = req.user?.role || 'user';
-  res.render('panelAdmin', { products, role: userRole });
+  res.render('panelAdmin', { products, role: userRole, user: req.user});
 });
 router.get('/products/edit/:id', authenticateJWT, checkRole('admin'), async (req, res) => {
   try {

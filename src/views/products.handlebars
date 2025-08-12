@@ -1,0 +1,22 @@
+<main class="products-list-wrapper">
+  <h2 class="products-title">Productos Disponibles</h2>
+  {{#if products.length}}
+    <div class="products-grid">
+      {{#each products}}
+        <div class="product-card">
+          <h3>{{this.title}}</h3>
+          <p>{{this.description}}</p>
+          <p><strong>Precio:</strong> ${{this.price}}</p>
+          <p><strong>Stock:</strong> {{this.stock}}</p>
+          <p><strong>Código:</strong> {{this.code}}</p>
+          <button class="btn btn-primary" onclick="addToCart('{{this._id}}')">Agregar al carrito</button>
+          {{#if (eq ../role 'admin')}}
+            <a href="/admin/products/edit/{{this._id}}" class="btn btn-secondary" style="margin-left:8px;">Editar</a>
+          {{/if}}
+        </div>
+      {{/each}}
+    </div>
+  {{else}}
+    <p>No hay productos para mostrar.</p>
+  {{/if}}
+</main>
