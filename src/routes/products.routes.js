@@ -6,7 +6,7 @@ import Product from '../models/product.model.js';
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', authenticate, async (req, res) => {
   const products = await Product.find().lean();
   res.render('products', { products, role: req.user?.role, user: req.user });
 });

@@ -10,7 +10,13 @@ const router = Router();
 
 router.get('/products', authenticateJWT, checkRole('admin'), async (req, res) => {
   const products = await Product.find().lean();
+
+  console.log("Ruta/products. Usuario actual:", req.user);
+
   const userRole = req.user?.role || 'user';
+
+  console.log('Ruta /products - role actual:', req.user?.role);
+
   res.render('panelAdmin', { products, role: userRole, user: req.user});
 });
 router.get('/products/edit/:id', authenticateJWT, checkRole('admin'), async (req, res) => {

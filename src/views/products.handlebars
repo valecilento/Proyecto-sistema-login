@@ -1,22 +1,52 @@
-<main class="products-list-wrapper">
-  <h2 class="products-title">Productos Disponibles</h2>
+<main class="page-wrapper">
+  <h2 class="page-title">Productos Disponibles</h2>
+
   {{#if products.length}}
-    <div class="products-grid">
+    <div class="grid-list">
       {{#each products}}
-        <div class="product-card">
-          <h3>{{this.title}}</h3>
-          <p>{{this.description}}</p>
+        <div class="card {{#unless this.stock}}out-of-stock{{/unless}}">
+          <h3 class="card-title">{{this.title}}</h3>
+          <p class="card-desc">{{this.description}}</p>
           <p><strong>Precio:</strong> ${{this.price}}</p>
           <p><strong>Stock:</strong> {{this.stock}}</p>
           <p><strong>Código:</strong> {{this.code}}</p>
-          <button class="btn btn-primary" onclick="addToCart('{{this._id}}')">Agregar al carrito</button>
-          {{#if (eq ../role 'admin')}}
-            <a href="/admin/products/edit/{{this._id}}" class="btn btn-secondary" style="margin-left:8px;">Editar</a>
-          {{/if}}
+
+          <div class="card-actions">
+            {{#if this.stock}}
+              <button class="admin-btn admin-btn-primary" onclick="addToCart('{{this._id}}')">
+              Agregar al carrito
+            </button>
+            {{/if}}
+            {{#if (eq ../user.role 'admin')}}
+              <a href="/admin/products/edit/{{this._id}}" class="admin-btn admin-btn-success">
+                Editar
+              </a>
+            {{/if}}
+          </div>
         </div>
       {{/each}}
     </div>
   {{else}}
-    <p>No hay productos para mostrar.</p>
+    <p class="empty-message">No hay productos para mostrar.</p>
   {{/if}}
 </main>
+
+<script>
+  async function addToCart(productId) {
+    try {
+      const res = await fetch('/api/cart/add', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ productId, quantity: 1 })
+      });
+      const result = await res.json();
+      if (res.ok) {
+        alert('Producto agregado al carrito');
+      } else {
+        alert(result.error || 'Error al agregar al carrito');
+      }
+    } catch {
+      alert('Error al conectar con el servidor');
+    }
+  }
+</script>

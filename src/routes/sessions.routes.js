@@ -6,7 +6,7 @@ const sessionRoutes = Router();
 
 sessionRoutes.post('/register', register);
 sessionRoutes.post('/login', (req, res, next) => {
-  passport.authenticate('login', { session: false }, (err, user, info) => {
+  passport.authenticate('login', { session: false }, (err, user) => {
     if (err) return next(err);
     if (!user) {
       return res.status(401).json({ status: 'error', error: 'Credenciales inválidas' });

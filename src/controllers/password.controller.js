@@ -27,7 +27,7 @@ export const requestPasswordReset = async (req, res) => {
         const user = await userModel.findOne({ email });
         if (!user) return res.status(404).send({ error: 'Usuario no encontrado' });
 
-        const token = jwt.sign({ id: user._id, email: user.email}, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
+        const token = jwt.sign({ id: user._id, email: user.email, role: user.role}, JWT_SECRET, { expiresIn: TOKEN_EXPIRATION });
         
         // Generación del link de reseteo
         const resetLink = `${req.protocol}://${req.get('host')}/resetPassword?token=${token}`;

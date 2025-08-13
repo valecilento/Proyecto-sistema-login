@@ -21,3 +21,18 @@ export const updateProduct = async (req, res) => {
     res.status(500).json({ message: 'Error al actualizar producto', error });
   }
 };
+export const renderProducts = async (req, res) => {
+  try {
+    const products = await Product.find(); 
+
+    console.log("Usuario actual:", req.user);
+
+    res.render('products', {
+      products,
+      user: req.user || { role: 'guest' }
+    });
+  } catch (error) {
+    console.error("Error al obtener productos:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+};
