@@ -21,7 +21,9 @@ passport.use('login', new LocalStrategy({
 }));
 
 passport.use('jwt', new JwtStrategy({
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  jwtFromRequest: ExtractJwt.fromExtractors([
+    req => req?.cookies?.token || null
+  ]),
   secretOrKey: JWT_SECRET
 }, async (jwtPayload, done) => {
   try {

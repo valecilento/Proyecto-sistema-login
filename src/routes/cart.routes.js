@@ -4,6 +4,7 @@ import authenticateJWT from '../middlewares/authenticateJWT.js';
 
 const router = Router();
 
+router.get('/', authenticateJWT, CartController.showUserCart);
 router.get('/:cid', authenticateJWT, CartController.showCart);
 router.post('/add', authenticateJWT, CartController.addToCart);
 router.delete('/remove/:productId', authenticateJWT, CartController.removeFromCart);

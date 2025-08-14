@@ -29,18 +29,11 @@ export const authenticateJWT = async (req, res, next) => {
 
 export const injectUserJWT = async (req, res, next) => {
   const token = req.cookies?.token;
-
-console.log('InjectUserJWT - Rol en locals:', res.locals.role);
+  console.log('InjectUserJWT - Rol en locals:', res.locals.role);
 
   if (!token) {
     res.locals.user = null;
-
-    console.log('InjectUserJWT - Usuario en locals:', res.locals.user);
-    
     res.locals.role = null;
-
-    console.log('InjectUserJWT - Rol en locals:', res.locals.role);
-
     return next();
   }
   try {

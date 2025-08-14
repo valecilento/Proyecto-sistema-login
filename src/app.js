@@ -8,13 +8,14 @@ import passwordRoutes from './routes/password.routes.js';
 import sessionRoutes from './routes/sessions.routes.js';
 import userRoutes from './routes/users.routes.js';
 import cartRoutes from './routes/cart.routes.js';
-import { checkRole } from '../src/middlewares/checkRole.js';
+import * as CartController from './controllers/cart.controller.js';
 import './config/db.js';
 import './config/passport.config.js';
 import adminRoutes from './routes/admin.routes.js';
 import cookieParser from 'cookie-parser';
 import productRoutes from './routes/products.routes.js';
 import { injectUserJWT, authenticateJWT } from './middlewares/authenticateJWT.js';
+import { renderProducts } from './controllers/product.controller.js';
 
 dotenv.config();
 
@@ -31,7 +32,6 @@ app.engine('handlebars', engine({
   }
 }));
 
-app.use(injectUserJWT);
 app.set('view engine', 'handlebars');
 app.set('views', path.join(__dirname, 'views'));
 
@@ -39,39 +39,45 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, '..','public')));
-app.use(passport.initialize());
 app.use(cookieParser());
+app.use(injectUserJWT);
+app.use(passport.initialize());
+app.use((req, res, next) => {
+  res.locals.user = req.user || null;
+  res.locals.role = req.user?.role || null;
+  next();
+});
 
 // Rutas API
 app.use('/api/sessions', sessionRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/password', passwordRoutes);
 app.use('/api/cart', cartRoutes);
-app.use('/admin', adminRoutes);
 app.use('/api/products', productRoutes);
-app.use('/products', productRoutes); // Para la vista pública
+app.use('/admin', adminRoutes);
+
 
 // Ruta de vista principal
-app.get('/', (req, res) => {
+app.get('/', injectUserJWT, (req, res) => {
   res.render('login');
 });
-app.get('/register', authenticateJWT, (req, res) => {
+app.get('/register', injectUserJWT, (req, res) => {
   res.render('register', { title: 'Registro' });
 });
 
-app.get('/login', authenticateJWT, (req, res) => {
+app.get('/login', injectUserJWT, (req, res) => {
   res.render('login', { title: 'Login' });
 });
 
-app.get('/cart', injectUserJWT, (req, res) => {
-  res.render('cart', { title: 'Mi carrito' });
-});
+app.get('/cart', authenticateJWT, CartController.showUserCart);
+
+app.get('/products', injectUserJWT, renderProducts)
 
 app.get('/profile', injectUserJWT, (req, res) => {
   res.render('profile', { title: 'Perfil' });
 });
 
-app.get('/admin', authenticateJWT, checkRole('admin'), (req, res) => {
+app.get('/admin', authenticateJWT, (req, res) => {
   res.render('panelAdmin', { title: 'Panel Admin' });
 });
 

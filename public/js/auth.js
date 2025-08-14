@@ -53,7 +53,8 @@ document.getElementById('loginForm')?.addEventListener('submit', async e => {
   const res = await fetch('/api/sessions/login', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(user)
+    body: JSON.stringify(user),
+    credentials: 'include'
   });
   console.log('Respuesta del servidor:', res);
 
@@ -128,8 +129,7 @@ function showNotLoggedInMessage() {
 
 // Logout
 document.getElementById('logoutBtn')?.addEventListener('click', () => {
-  localStorage.removeItem('token');
-  window.location.href = '/login';
+  window.location.href = '/logout';
 });
 
 window.onload = () => {

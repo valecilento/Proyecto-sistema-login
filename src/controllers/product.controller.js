@@ -23,13 +23,11 @@ export const updateProduct = async (req, res) => {
 };
 export const renderProducts = async (req, res) => {
   try {
-    const products = await Product.find(); 
-
-    console.log("Usuario actual:", req.user);
+    const products = await Product.find().lean(); 
 
     res.render('products', {
-      products,
-      user: req.user || { role: 'guest' }
+      title: 'Productos',
+      products
     });
   } catch (error) {
     console.error("Error al obtener productos:", error);

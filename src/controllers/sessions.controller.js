@@ -17,7 +17,7 @@ export const register = async (req, res) => {
       age,
       password: createHash(password)
     });
-    res.send({ status: 'success', user: newUser });
+    res.status(200).send({ message: "success", user: newUser });
   } catch (error) {
     res.status(500).send({ error: error.message });
   }
@@ -25,8 +25,8 @@ export const register = async (req, res) => {
 
 export const login = async (req, res) => {
   try {
-    console.log('Usuario en req.user', req.user);
     let cart = await CartService.getCartByUserId(req.user._id);
+    console.log('Usuario en req.user', req.user);
     console.log('Carrito encontrado', cart);
     if (!cart) {
       cart = await CartService.createCartForUser(req.user._id);
@@ -55,5 +55,5 @@ export const login = async (req, res) => {
 
 export const current = (req, res) => {
   const { first_name, last_name, email, age, role } = req.user;
-  res.send({ status: 'success', user: { first_name, last_name, email, age, role } });
+      res.status(200).send({ message: "success", user:{ first_name, last_name, email, age, role } });
 };
